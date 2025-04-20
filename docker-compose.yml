@@ -1,10 +1,10 @@
-version: '2'
-
 services:
   nginx-proxy:
     image: nginxproxy/nginx-proxy
-    container_name: nginx-proxy
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
     ports:
       - "80:80"
       - "443:443"
@@ -15,13 +15,15 @@ services:
       - ./data/certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
-      - network
+      - default
       - nginx-proxy
 
   acme-companion:
     image: nginxproxy/acme-companion
-    container_name: nginx-proxy-acme
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
     environment:
       DEFAULT_EMAIL: ${DEFAULT_EMAIL:?missing DEFAULT_EMAIL}
       ACME_CA_URI: ${ACME_CA_URI:?missing ACME_CA_URI}
@@ -31,10 +33,11 @@ services:
       - ./data/certs:/etc/nginx/certs:rw
       - ./data/acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    #network_mode: bridge
     networks:
-      - network
+      - default
 networks:
-  network:
+  default:
   nginx-proxy:
     name: nginx-proxy
+  socket-proxy:
+    external: true
