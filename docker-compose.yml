@@ -5,6 +5,9 @@ services:
     user: ${PUID:-1000}:${PGID:-1000}
     security_opt:
       - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     ports:
       - "80:80"
       - "443:443"
@@ -24,6 +27,9 @@ services:
     user: ${PUID:-1000}:${PGID:-1000}
     security_opt:
       - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       DEFAULT_EMAIL: ${DEFAULT_EMAIL:?missing DEFAULT_EMAIL}
       ACME_CA_URI: ${ACME_CA_URI:?missing ACME_CA_URI}
